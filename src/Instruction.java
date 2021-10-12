@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 class Instruction {
     // we only use the lower 32 bits
     private final long value;

@@ -11,8 +11,6 @@ public class Loader {
             String line = scanner.nextLine();
             if (line.startsWith("// JOB")) {
                 parseJob(line, scanner);
-            } else if (line.startsWith("#")) {
-                // skip
             } else {
                 throw new Exception("expected job header, got '" + line + "'");
             }

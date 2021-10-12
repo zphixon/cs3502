@@ -5,12 +5,40 @@ public class Device {
         Loader.load("programs.txt");
         dumpDisk();
 
-        for (Program prog : programs) {
-            System.out.println(prog);
-            for (int i = prog.diskLocation(); i < prog.diskLocation() + prog.length(); i++) {
-                System.out.println(new Instruction(disk[i]));
-            }
-        }
+        Program program1 = programs.get(0);
+        for (int i = 0; i < program1.totalLength(); i++)
+            ram[i] = disk[i];
+
+        CPU cpu = new CPU();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
+        cpu.step();
     }
 
     public static final int RAM_WORDS = 1024;
