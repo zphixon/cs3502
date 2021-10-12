@@ -138,7 +138,8 @@ public class CPU {
 
             case JMP -> {
                 // TODO memory address translation
-                this.ip = instruction.address();
+                this.ip = instruction.address() / 4;
+                return true;
             }
 
             case BEQ -> {
