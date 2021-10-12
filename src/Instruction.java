@@ -172,6 +172,7 @@ class Instruction {
                     sb.append(this.d());
                 } catch (Exception e) {
                     System.err.println("toString failed");
+                    System.exit(1);
                 }
             }
 
@@ -184,6 +185,7 @@ class Instruction {
                     sb.append(this.address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
+                    System.exit(1);
                 }
             }
 
@@ -192,6 +194,7 @@ class Instruction {
                     sb.append(this.address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
+                    System.exit(1);
                 }
             }
 
@@ -204,6 +207,7 @@ class Instruction {
                     sb.append(this.address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
+                    System.exit(1);
                 }
             }
         }
