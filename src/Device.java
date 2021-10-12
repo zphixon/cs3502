@@ -25,6 +25,8 @@ public class Device {
         }
     }
 
+    public static final boolean PRINT_INSTRUCTION = true;
+
     public static final int RAM_WORDS = 1024;
     public static final int DISK_WORDS = 2048;
 

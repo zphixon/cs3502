@@ -23,10 +23,15 @@ public class CPU {
         // decode the instruction
         // TODO memory address translation
         Instruction instruction = new Instruction(Device.ram[ip]);
-        System.out.println(String.format("%04x  ", ip) + instruction);
+
+        if (Device.PRINT_INSTRUCTION)
+            System.out.println(String.format("%04x  ", ip) + instruction);
+
         switch (instruction.opcode()) {
             // read content from *r2 or *address into r1
             case RD -> {
+                currentProcess.ioOperations++;
+
                 // TODO cache, memory address translation, preemption
                 int address;
                 if (instruction.ioReg2() != 0)
@@ -42,6 +47,8 @@ public class CPU {
 
             // write content of r1 into *r2 or *address
             case WR -> {
+                currentProcess.ioOperations++;
+
                 // TODO preemption
                 int address;
                 if (instruction.ioReg2() != 0)
