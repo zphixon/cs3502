@@ -7,11 +7,12 @@ public class Device {
         CPU cpu = new CPU();
 
         // manually move the program to ram to execute
+        int ramLocation = 0;
         for (Program program : programs) {
             System.out.println(program);
             for (int j = program.diskLocation(); j < program.diskLocation() + program.totalLength(); j++)
-                ram[j - program.diskLocation()] = disk[j];
-            Process proc = new Process(program, 0, 0);
+                ram[ramLocation + j - program.diskLocation()] = disk[j];
+            Process proc = new Process(program, ramLocation, 0);
             cpu.switchContext(proc);
 
             // run a single program
@@ -22,7 +23,10 @@ public class Device {
             dumpMemory(program.outputStart(), program.outputStart() + program.outputLength());
             System.out.println(proc);
             System.out.println();
+            ramLocation += 5;
         }
+
+        dumpMemory();
     }
 
     public static final boolean PRINT_INSTRUCTION = true;

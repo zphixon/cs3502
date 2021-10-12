@@ -21,7 +21,6 @@ public class CPU {
     // do one step of the cpu
     public boolean step() throws Exception {
         // decode the instruction
-        // TODO memory address translation
         Instruction instruction = new Instruction(Device.ram[ip]);
 
         if (Device.PRINT_INSTRUCTION)
@@ -32,7 +31,7 @@ public class CPU {
             case RD -> {
                 currentProcess.ioOperations++;
 
-                // TODO cache, memory address translation, preemption
+                // TODO cache, preemption
                 int address;
                 if (instruction.ioReg2() != 0)
                     address = registers[instruction.ioReg2()] / 4;
@@ -41,7 +40,7 @@ public class CPU {
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
-                int data = Device.ram[address];
+                int data = Device.ram[currentProcess.ramLocation + address];
                 registers[instruction.ioReg1()] = data;
             }
 
@@ -58,23 +57,23 @@ public class CPU {
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
-                // TODO cache, memory address translation
-                Device.ram[address] = registers[instruction.ioReg1()];
+                // TODO cache
+                Device.ram[currentProcess.ramLocation + address] = registers[instruction.ioReg1()];
             }
 
             // store register data to memory
             case ST -> {
                 int data = registers[instruction.b()];
                 int address = registers[instruction.d()] / 4;
-                // TODO cache, memory address translation
-                Device.ram[address] = data;
+                // TODO cache
+                Device.ram[currentProcess.ramLocation + address] = data;
             }
 
             // load memory into register with offset value in register
             case LW -> {
                 int address = (instruction.address() + registers[instruction.b()]) / 4;
-                // TODO cache, memory address translation
-                registers[instruction.d()] = Device.ram[address];
+                // TODO cache
+                registers[instruction.d()] = Device.ram[currentProcess.ramLocation + address];
             }
 
             // copy register value to another
@@ -148,7 +147,7 @@ public class CPU {
 
             case SLTI -> {
                 int b = registers[instruction.b()];
-                int data = instruction.address() / 4;
+                int data = instruction.address();
 
                 if (b < data)
                     registers[instruction.d()] = 1;
@@ -166,8 +165,7 @@ public class CPU {
 
             // branch instructions return because we don't want to increment the ip
             case JMP -> {
-                // TODO memory address translation
-                ip = instruction.address() / 4;
+                ip = (instruction.address() + currentProcess.ramLocation) / 4;
                 return true;
             }
 
@@ -175,9 +173,8 @@ public class CPU {
                 int b = registers[instruction.b()];
                 int d = registers[instruction.d()];
 
-                // TODO memory address translation
                 if (b == d) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
@@ -186,9 +183,8 @@ public class CPU {
                 int b = registers[instruction.b()];
                 int d = registers[instruction.d()];
 
-                // TODO memory address translation
                 if (b != d) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
@@ -196,9 +192,8 @@ public class CPU {
             case BEZ -> {
                 int b = registers[instruction.b()];
 
-                // TODO memory address translation
                 if (b == 0) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
@@ -206,9 +201,8 @@ public class CPU {
             case BNZ -> {
                 int b = registers[instruction.b()];
 
-                // TODO memory address translation
                 if (b != 0) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
@@ -216,9 +210,8 @@ public class CPU {
             case BGZ -> {
                 int b = registers[instruction.b()];
 
-                // TODO memory address translation
                 if (b > 0) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
@@ -226,9 +219,8 @@ public class CPU {
             case BLZ -> {
                 int b = registers[instruction.b()];
 
-                // TODO memory address translation
                 if (b < 0) {
-                    ip = instruction.address() / 4;
+                    ip = currentProcess.ramLocation + instruction.address() / 4;
                     return true;
                 }
             }
