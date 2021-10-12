@@ -121,7 +121,7 @@ class Instruction {
     public int b() throws Exception {
         if (this.opcodeKind() != OpcodeKind.Condition)
             throw new Exception("wrong opcode kind for b '" + this.opcodeKind() + "'");
-        return this.reg2();
+        return this.reg1();
     }
 
     public int address() throws Exception {
