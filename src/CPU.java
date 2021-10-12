@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class CPU {
     public static final int NUM_REGISTERS = 16;
     int[] registers = new int[NUM_REGISTERS];
@@ -12,9 +14,9 @@ public class CPU {
                 // TODO cache, memory address translation
                 int data;
                 if (instruction.ioReg2() != 0)
-                    data = Device.ram[instruction.ioReg2()/4];
+                    data = Device.ram[this.registers[instruction.ioReg2()] / 4];
                 else if (instruction.address() != 0)
-                    data = Device.ram[instruction.address()/4];
+                    data = Device.ram[instruction.address() / 4];
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
@@ -25,27 +27,27 @@ public class CPU {
             case WR -> {
                 int address;
                 if (instruction.ioReg2() != 0)
-                    address = this.registers[instruction.ioReg2()];
+                    address = this.registers[instruction.ioReg2()] / 4;
                 else if (instruction.address() != 0)
-                    address = instruction.address();
+                    address = instruction.address() / 4;
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
                 // TODO cache, memory address translation
-                Device.ram[address/4] = this.registers[instruction.ioReg1()];
+                Device.ram[address] = this.registers[instruction.ioReg1()];
             }
 
             case ST -> {
                 int data = this.registers[instruction.b()];
-                int address = this.registers[instruction.d()];
+                int address = this.registers[instruction.d()] / 4;
                 // TODO cache, memory address translation
-                Device.ram[address/4] = data;
+                Device.ram[address] = data;
             }
 
             case LW -> {
-                int address = this.registers[instruction.b()];
+                int address = (instruction.address() + this.registers[instruction.b()]) / 4;
                 // TODO cache, memory address translation
-                this.registers[instruction.d()] = Device.ram[address/4];
+                this.registers[instruction.d()] = Device.ram[address];
             }
 
             case MOV -> {
@@ -117,9 +119,9 @@ public class CPU {
 
             case SLTI -> {
                 int b = this.registers[instruction.b()];
-                int d = this.registers[instruction.d()];
+                int data = instruction.address() / 4;
 
-                if (b < d)
+                if (b < data)
                     this.registers[instruction.d()] = 1;
                 else
                     this.registers[instruction.d()] = 0;
@@ -127,9 +129,11 @@ public class CPU {
 
             case HLT -> {
                 // context switch
+                return;
             }
 
-            case NOP -> {}
+            case NOP -> {
+            }
 
             case JMP -> {
                 // TODO memory address translation
@@ -142,7 +146,7 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b == d)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
 
             case BNE -> {
@@ -151,7 +155,7 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b != d)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
 
             case BEZ -> {
@@ -159,7 +163,7 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b == 0)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
 
             case BNZ -> {
@@ -167,7 +171,7 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b != 0)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
 
             case BGZ -> {
@@ -175,7 +179,7 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b > 0)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
 
             case BLZ -> {
@@ -183,9 +187,17 @@ public class CPU {
 
                 // TODO memory address translation
                 if (b < 0)
-                    this.ip = instruction.address();
+                    this.ip = instruction.address() / 4;
             }
         }
         ip++;
+    }
+
+    @Override
+    public String toString() {
+        return "CPU{" +
+                "registers=" + Arrays.toString(registers) +
+                ", ip=" + ip +
+                '}';
     }
 }
