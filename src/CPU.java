@@ -12,14 +12,15 @@ public class CPU {
             // read content from *r2 or *address into r1
             case RD -> {
                 // TODO cache, memory address translation
-                int data;
+                int address;
                 if (instruction.ioReg2() != 0)
-                    data = Device.ram[this.registers[instruction.ioReg2()] / 4];
+                    address = this.registers[instruction.ioReg2()] / 4;
                 else if (instruction.address() != 0)
-                    data = Device.ram[instruction.address() / 4];
+                    address = instruction.address() / 4;
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
+                int data = Device.ram[address];
                 this.registers[instruction.ioReg1()] = data;
             }
 
