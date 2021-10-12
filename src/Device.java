@@ -26,7 +26,7 @@ public class Device {
             ramLocation += 5;
         }
 
-        dumpMemory();
+        //dumpMemory();
     }
 
     public static final boolean PRINT_INSTRUCTION = true;

@@ -165,7 +165,7 @@ public class CPU {
 
             // branch instructions return because we don't want to increment the ip
             case JMP -> {
-                ip = (instruction.address() + currentProcess.ramLocation) / 4;
+                ip = currentProcess.ramLocation + instruction.address() / 4;
                 return true;
             }
 
