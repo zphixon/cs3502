@@ -4,6 +4,19 @@ public class CPU {
     public static final int NUM_REGISTERS = 16;
     int[] registers = new int[NUM_REGISTERS];
     int ip = 0;
+    Process currentProcess;
+
+    public void switchContext(Process newProcess) {
+        this.currentProcess = newProcess;
+        this.ip = newProcess.ramLocation;
+    }
+
+    public void savePCB() {
+        for (int i = 0; i < NUM_REGISTERS; i++) {
+            currentProcess.registers[i] = this.registers[i];
+        }
+        currentProcess.ip = this.ip;
+    }
 
     // do one step of the cpu
     public boolean step() throws Exception {
@@ -137,7 +150,7 @@ public class CPU {
             }
 
             case HLT -> {
-                // TODO context switch
+                this.savePCB();
                 return false;
             }
 
@@ -223,6 +236,7 @@ public class CPU {
         return "CPU{" +
                 "registers=" + Arrays.toString(registers) +
                 ", ip=" + ip +
+                ", process=" + currentProcess.program.number() +
                 '}';
     }
 }

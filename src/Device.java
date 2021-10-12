@@ -4,20 +4,26 @@ public class Device {
     public static void main(String[] args) throws Exception {
         // sets up Device.disk with the programs
         Loader.load("programs.txt");
+        CPU cpu = new CPU();
 
         // manually move the program to ram to execute
-        Program program1 = programs.get(3);
-        System.out.println(program1);
-        for (int i = program1.diskLocation(); i < program1.diskLocation() + program1.totalLength(); i++)
-            ram[i - program1.diskLocation()] = disk[i];
+        for (int i = 0; i < programs.size(); i++) {
+            Program program = programs.get(i);
+            System.out.println(program);
+            for (int j = program.diskLocation(); j < program.diskLocation() + program.totalLength(); j++)
+                ram[j - program.diskLocation()] = disk[j];
+            Process proc = new Process(program, 0, 0);
+            cpu.switchContext(proc);
 
-        // run a single program
-        CPU cpu = new CPU();
-        while (cpu.step())
-            ;
+            // run a single program
+            while (cpu.step())
+                ;
 
-        // show the output of the program
-        dumpMemory(program1.outputStart(), program1.outputStart() + program1.outputLength());
+            // show the output of the program
+            dumpMemory(program.outputStart(), program.outputStart() + program.outputLength());
+            System.out.println(proc);
+            System.out.println();
+        }
     }
 
     public static final int RAM_WORDS = 1024;
@@ -29,7 +35,7 @@ public class Device {
     public static ArrayList<Program> programs = new ArrayList<>();
     public static ArrayList<Process> ready = new ArrayList<>();
     public static ArrayList<Process> waiting = new ArrayList<>();
-    public static ArrayList<Program> finished = new ArrayList<>();
+    public static ArrayList<Process> finished = new ArrayList<>();
 
     public static void dumpDisk() {
         dumpDisk(0, DISK_WORDS);
@@ -42,6 +48,7 @@ public class Device {
             if (i % 16 == 15)
                 System.out.println();
         }
+        System.out.println();
     }
 
     public static void dumpMemory() {
@@ -55,5 +62,6 @@ public class Device {
             if (i % 16 == 15)
                 System.out.println();
         }
+        System.out.println();
     }
 }
