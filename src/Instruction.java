@@ -1,21 +1,9 @@
 class Instruction {
-    // we only use the lower 32 bits
+    // use a long because java's bit-shift operators extend the sign
     private final long value;
-
-    // value is a hex string
-    public Instruction(String value) throws Exception {
-        // make sure the instruction is the right size
-        if (value.length() != 8)
-            throw new Exception("instruction wrong size '" + value + "'");
-        this.value = Long.parseLong(value, 16);
-    }
 
     public Instruction(int value) {
         this.value = Integer.toUnsignedLong(value);
-    }
-
-    public int value() {
-        return (int) this.value;
     }
 
     public String formatValue() {

@@ -5,13 +5,16 @@ public class CPU {
     int[] registers = new int[NUM_REGISTERS];
     int ip = 0;
 
+    // do one step of the cpu
     public boolean step() throws Exception {
+        // decode the instruction
+        // TODO memory address translation
         Instruction instruction = new Instruction(Device.ram[ip]);
         System.out.println(String.format("%04x  ", this.ip) + instruction);
         switch (instruction.opcode()) {
             // read content from *r2 or *address into r1
             case RD -> {
-                // TODO cache, memory address translation
+                // TODO cache, memory address translation, preemption
                 int address;
                 if (instruction.ioReg2() != 0)
                     address = this.registers[instruction.ioReg2()] / 4;
@@ -26,6 +29,7 @@ public class CPU {
 
             // write content of r1 into *r2 or *address
             case WR -> {
+                // TODO preemption
                 int address;
                 if (instruction.ioReg2() != 0)
                     address = this.registers[instruction.ioReg2()] / 4;
@@ -38,6 +42,7 @@ public class CPU {
                 Device.ram[address] = this.registers[instruction.ioReg1()];
             }
 
+            // store register data to memory
             case ST -> {
                 int data = this.registers[instruction.b()];
                 int address = this.registers[instruction.d()] / 4;
@@ -45,12 +50,14 @@ public class CPU {
                 Device.ram[address] = data;
             }
 
+            // load memory into register with offset value in register
             case LW -> {
                 int address = (instruction.address() + this.registers[instruction.b()]) / 4;
                 // TODO cache, memory address translation
                 this.registers[instruction.d()] = Device.ram[address];
             }
 
+            // copy register value to another
             case MOV -> {
                 this.registers[instruction.s1()] = this.registers[instruction.s2()];
             }
@@ -108,6 +115,7 @@ public class CPU {
                 this.registers[instruction.d()] /= instruction.address();
             }
 
+            // set less than
             case SLT -> {
                 int s1 = this.registers[instruction.s1()];
                 int s2 = this.registers[instruction.s2()];
@@ -129,13 +137,14 @@ public class CPU {
             }
 
             case HLT -> {
-                // context switch
+                // TODO context switch
                 return false;
             }
 
             case NOP -> {
             }
 
+            // branch instructions return because we don't want to increment the ip
             case JMP -> {
                 // TODO memory address translation
                 this.ip = instruction.address() / 4;

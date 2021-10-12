@@ -4,6 +4,18 @@ public record Program(int number, int length, int priority, int inputLength, int
         return length + inputLength + outputLength + tempLength;
     }
 
+    public int inputStart() {
+        return length;
+    }
+
+    public int outputStart() {
+        return length + inputLength;
+    }
+
+    public int tempStart() {
+        return length + inputLength + outputLength;
+    }
+
     @Override
     public String toString() {
         return "Program{" +

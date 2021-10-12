@@ -2,28 +2,22 @@ import java.util.ArrayList;
 
 public class Device {
     public static void main(String[] args) throws Exception {
+        // sets up Device.disk with the programs
         Loader.load("programs.txt");
-        dumpDisk();
 
-//        for (Program program : programs) {
-//            for (int i = program.diskLocation(); i < program.length() + program.diskLocation(); i++) {
-//                Instruction instruction = new Instruction(disk[i]);
-//                if ((instruction.opcodeKind() == Instruction.OpcodeKind.Condition || instruction.opcodeKind() == Instruction.OpcodeKind.IO)
-//                && instruction.opcode() != Instruction.Opcode.ADDI && instruction.opcode() != Instruction.Opcode.MOVI) {
-//                    System.out.println(instruction + " -> " + Device.disk[program.diskLocation() + (instruction.address() / 4)]);
-//                }
-//            }
-//        }
+        // manually move the program to ram to execute
+        Program program1 = programs.get(3);
+        System.out.println(program1);
+        for (int i = program1.diskLocation(); i < program1.diskLocation() + program1.totalLength(); i++)
+            ram[i - program1.diskLocation()] = disk[i];
 
-        Program program1 = programs.get(0);
-        if (program1.totalLength() >= 0)
-            System.arraycopy(disk, 0, ram, 0, program1.totalLength());
-
+        // run a single program
         CPU cpu = new CPU();
         while (cpu.step())
             ;
-        System.out.println(ram[program1.length() + program1.inputLength()]);
-        dumpMemory(program1.totalLength());
+
+        // show the output of the program
+        dumpMemory(program1.outputStart(), program1.outputStart() + program1.outputLength());
     }
 
     public static final int RAM_WORDS = 1024;
