@@ -16,33 +16,13 @@ public class Device {
 //        }
 
         Program program1 = programs.get(0);
-        for (int i = 0; i < program1.totalLength(); i++)
-            ram[i] = disk[i];
+        if (program1.totalLength() >= 0)
+            System.arraycopy(disk, 0, ram, 0, program1.totalLength());
 
         CPU cpu = new CPU();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
-        cpu.step();
+        while (cpu.step())
+            ;
+        System.out.println(ram[program1.length() + program1.inputLength()]);
         dumpMemory(program1.totalLength());
     }
 

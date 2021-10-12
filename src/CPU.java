@@ -5,7 +5,7 @@ public class CPU {
     int[] registers = new int[NUM_REGISTERS];
     int ip = 0;
 
-    public void step() throws Exception {
+    public boolean step() throws Exception {
         Instruction instruction = new Instruction(Device.ram[ip]);
         System.out.println(String.format("%04x  ", this.ip) + instruction);
         switch (instruction.opcode()) {
@@ -130,7 +130,7 @@ public class CPU {
 
             case HLT -> {
                 // context switch
-                return;
+                return false;
             }
 
             case NOP -> {
@@ -192,6 +192,7 @@ public class CPU {
             }
         }
         ip++;
+        return true;
     }
 
     @Override
