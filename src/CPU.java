@@ -7,15 +7,15 @@ public class CPU {
     Process currentProcess;
 
     public void switchContext(Process newProcess) {
-        this.currentProcess = newProcess;
-        this.ip = newProcess.ramLocation;
+        currentProcess = newProcess;
+        ip = newProcess.ramLocation;
     }
 
     public void savePCB() {
         for (int i = 0; i < NUM_REGISTERS; i++) {
-            currentProcess.registers[i] = this.registers[i];
+            currentProcess.registers[i] = registers[i];
         }
-        currentProcess.ip = this.ip;
+        currentProcess.ip = ip;
     }
 
     // do one step of the cpu
@@ -23,21 +23,21 @@ public class CPU {
         // decode the instruction
         // TODO memory address translation
         Instruction instruction = new Instruction(Device.ram[ip]);
-        System.out.println(String.format("%04x  ", this.ip) + instruction);
+        System.out.println(String.format("%04x  ", ip) + instruction);
         switch (instruction.opcode()) {
             // read content from *r2 or *address into r1
             case RD -> {
                 // TODO cache, memory address translation, preemption
                 int address;
                 if (instruction.ioReg2() != 0)
-                    address = this.registers[instruction.ioReg2()] / 4;
+                    address = registers[instruction.ioReg2()] / 4;
                 else if (instruction.address() != 0)
                     address = instruction.address() / 4;
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
                 int data = Device.ram[address];
-                this.registers[instruction.ioReg1()] = data;
+                registers[instruction.ioReg1()] = data;
             }
 
             // write content of r1 into *r2 or *address
@@ -45,112 +45,112 @@ public class CPU {
                 // TODO preemption
                 int address;
                 if (instruction.ioReg2() != 0)
-                    address = this.registers[instruction.ioReg2()] / 4;
+                    address = registers[instruction.ioReg2()] / 4;
                 else if (instruction.address() != 0)
                     address = instruction.address() / 4;
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
                 // TODO cache, memory address translation
-                Device.ram[address] = this.registers[instruction.ioReg1()];
+                Device.ram[address] = registers[instruction.ioReg1()];
             }
 
             // store register data to memory
             case ST -> {
-                int data = this.registers[instruction.b()];
-                int address = this.registers[instruction.d()] / 4;
+                int data = registers[instruction.b()];
+                int address = registers[instruction.d()] / 4;
                 // TODO cache, memory address translation
                 Device.ram[address] = data;
             }
 
             // load memory into register with offset value in register
             case LW -> {
-                int address = (instruction.address() + this.registers[instruction.b()]) / 4;
+                int address = (instruction.address() + registers[instruction.b()]) / 4;
                 // TODO cache, memory address translation
-                this.registers[instruction.d()] = Device.ram[address];
+                registers[instruction.d()] = Device.ram[address];
             }
 
             // copy register value to another
             case MOV -> {
-                this.registers[instruction.s1()] = this.registers[instruction.s2()];
+                registers[instruction.s1()] = registers[instruction.s2()];
             }
 
             case ADD -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a + b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a + b;
             }
 
             case SUB -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a - b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a - b;
             }
 
             case MUL -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a * b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a * b;
             }
 
             case DIV -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a / b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a / b;
             }
 
             case AND -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a & b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a & b;
             }
 
             case OR -> {
-                int a = this.registers[instruction.s1()];
-                int b = this.registers[instruction.s2()];
-                this.registers[instruction.d()] = a | b;
+                int a = registers[instruction.s1()];
+                int b = registers[instruction.s2()];
+                registers[instruction.d()] = a | b;
             }
 
             // these are the same?
             case MOVI, LDI -> {
-                this.registers[instruction.d()] = instruction.address();
+                registers[instruction.d()] = instruction.address();
             }
 
             case ADDI -> {
-                this.registers[instruction.d()] += instruction.address();
+                registers[instruction.d()] += instruction.address();
             }
 
             case MULI -> {
-                this.registers[instruction.d()] *= instruction.address();
+                registers[instruction.d()] *= instruction.address();
             }
 
             case DIVI -> {
-                this.registers[instruction.d()] /= instruction.address();
+                registers[instruction.d()] /= instruction.address();
             }
 
             // set less than
             case SLT -> {
-                int s1 = this.registers[instruction.s1()];
-                int s2 = this.registers[instruction.s2()];
+                int s1 = registers[instruction.s1()];
+                int s2 = registers[instruction.s2()];
 
                 if (s1 < s2)
-                    this.registers[instruction.d()] = 1;
+                    registers[instruction.d()] = 1;
                 else
-                    this.registers[instruction.d()] = 0;
+                    registers[instruction.d()] = 0;
             }
 
             case SLTI -> {
-                int b = this.registers[instruction.b()];
+                int b = registers[instruction.b()];
                 int data = instruction.address() / 4;
 
                 if (b < data)
-                    this.registers[instruction.d()] = 1;
+                    registers[instruction.d()] = 1;
                 else
-                    this.registers[instruction.d()] = 0;
+                    registers[instruction.d()] = 0;
             }
 
             case HLT -> {
-                this.savePCB();
+                savePCB();
                 return false;
             }
 
@@ -160,68 +160,68 @@ public class CPU {
             // branch instructions return because we don't want to increment the ip
             case JMP -> {
                 // TODO memory address translation
-                this.ip = instruction.address() / 4;
+                ip = instruction.address() / 4;
                 return true;
             }
 
             case BEQ -> {
-                int b = this.registers[instruction.b()];
-                int d = this.registers[instruction.d()];
+                int b = registers[instruction.b()];
+                int d = registers[instruction.d()];
 
                 // TODO memory address translation
                 if (b == d) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }
 
             case BNE -> {
-                int b = this.registers[instruction.b()];
-                int d = this.registers[instruction.d()];
+                int b = registers[instruction.b()];
+                int d = registers[instruction.d()];
 
                 // TODO memory address translation
                 if (b != d) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }
 
             case BEZ -> {
-                int b = this.registers[instruction.b()];
+                int b = registers[instruction.b()];
 
                 // TODO memory address translation
                 if (b == 0) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }
 
             case BNZ -> {
-                int b = this.registers[instruction.b()];
+                int b = registers[instruction.b()];
 
                 // TODO memory address translation
                 if (b != 0) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }
 
             case BGZ -> {
-                int b = this.registers[instruction.b()];
+                int b = registers[instruction.b()];
 
                 // TODO memory address translation
                 if (b > 0) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }
 
             case BLZ -> {
-                int b = this.registers[instruction.b()];
+                int b = registers[instruction.b()];
 
                 // TODO memory address translation
                 if (b < 0) {
-                    this.ip = instruction.address() / 4;
+                    ip = instruction.address() / 4;
                     return true;
                 }
             }

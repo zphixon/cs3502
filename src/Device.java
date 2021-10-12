@@ -7,8 +7,7 @@ public class Device {
         CPU cpu = new CPU();
 
         // manually move the program to ram to execute
-        for (int i = 0; i < programs.size(); i++) {
-            Program program = programs.get(i);
+        for (Program program : programs) {
             System.out.println(program);
             for (int j = program.diskLocation(); j < program.diskLocation() + program.totalLength(); j++)
                 ram[j - program.diskLocation()] = disk[j];
