@@ -38,38 +38,28 @@ public class Device {
     public static ArrayList<Program> finished = new ArrayList<>();
 
     public static void dumpDisk() {
-        dumpDisk(DISK_WORDS);
+        dumpDisk(0, DISK_WORDS);
     }
 
-    public static void dumpDisk(int upTo) {
-        int i = 1;
-        for (int word : disk) {
-            System.out.print(String.format("    %08x", word));
+    public static void dumpDisk(int start, int upTo) {
+        for (int i = start; i < upTo; i++) {
+            System.out.printf("    %08x", disk[i]);
 
-            if (i % 16 == 0)
+            if (i % 16 == 15)
                 System.out.println();
-
-            i++;
-            if (i == upTo)
-                return;
         }
     }
 
     public static void dumpMemory() {
-        dumpMemory(RAM_WORDS);
+        dumpMemory(0, RAM_WORDS);
     }
 
-    public static void dumpMemory(int upTo) {
-        int i = 1;
-        for (int word : ram) {
-            System.out.print(String.format("    %08x", word));
+    public static void dumpMemory(int start, int upTo) {
+        for (int i = start; i < upTo; i++) {
+            System.out.printf("    %08x", ram[i]);
 
-            if (i % 16 == 0)
+            if (i % 16 == 15)
                 System.out.println();
-
-            i++;
-            if (i == upTo)
-                return;
         }
     }
 }
