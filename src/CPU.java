@@ -146,8 +146,10 @@ public class CPU {
                 int d = this.registers[instruction.d()];
 
                 // TODO memory address translation
-                if (b == d)
+                if (b == d) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
 
             case BNE -> {
@@ -155,42 +157,53 @@ public class CPU {
                 int d = this.registers[instruction.d()];
 
                 // TODO memory address translation
-                if (b != d)
+                if (b != d) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
 
             case BEZ -> {
                 int b = this.registers[instruction.b()];
 
                 // TODO memory address translation
-                if (b == 0)
+                if (b == 0) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
 
             case BNZ -> {
                 int b = this.registers[instruction.b()];
 
                 // TODO memory address translation
-                if (b != 0)
+                if (b != 0) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
 
             case BGZ -> {
                 int b = this.registers[instruction.b()];
 
                 // TODO memory address translation
-                if (b > 0)
+                if (b > 0) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
 
             case BLZ -> {
                 int b = this.registers[instruction.b()];
 
                 // TODO memory address translation
-                if (b < 0)
+                if (b < 0) {
                     this.ip = instruction.address() / 4;
+                    return true;
+                }
             }
         }
+
         ip++;
         return true;
     }
