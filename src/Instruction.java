@@ -27,7 +27,7 @@ class Instruction {
     }
 
     public String formatValue() {
-        return String.format("%08x", this.value);
+        return String.format("%08x", value);
     }
 
     // masks for instruction decoding
@@ -77,49 +77,49 @@ class Instruction {
     }
 
     public int s1() throws Exception {
-        if (this.opcodeKind != OpcodeKind.Arithmetic)
-            throw new Exception("wrong opcode kind for s1 '" + this.opcodeKind + "'");
-        return this.reg1;
+        if (opcodeKind != OpcodeKind.Arithmetic)
+            throw new Exception("wrong opcode kind for s1 '" + opcodeKind + "'");
+        return reg1;
     }
 
     public int s2() throws Exception {
-        if (this.opcodeKind != OpcodeKind.Arithmetic)
-            throw new Exception("wrong opcode kind for s2 '" + this.opcodeKind + "'");
-        return this.reg2;
+        if (opcodeKind != OpcodeKind.Arithmetic)
+            throw new Exception("wrong opcode kind for s2 '" + opcodeKind + "'");
+        return reg2;
     }
 
     public int d() throws Exception {
-        if (this.opcodeKind == OpcodeKind.Condition)
-            return this.reg2;
-        if (this.opcodeKind == OpcodeKind.Arithmetic)
-            return this.reg3;
-        throw new Exception("wrong opcode kind for d '" + this.opcodeKind + "'");
+        if (opcodeKind == OpcodeKind.Condition)
+            return reg2;
+        if (opcodeKind == OpcodeKind.Arithmetic)
+            return reg3;
+        throw new Exception("wrong opcode kind for d '" + opcodeKind + "'");
     }
 
     public int b() throws Exception {
-        if (this.opcodeKind != OpcodeKind.Condition)
-            throw new Exception("wrong opcode kind for b '" + this.opcodeKind + "'");
-        return this.reg1;
+        if (opcodeKind != OpcodeKind.Condition)
+            throw new Exception("wrong opcode kind for b '" + opcodeKind + "'");
+        return reg1;
     }
 
     public int address() throws Exception {
-        if (this.opcodeKind == OpcodeKind.Condition || this.opcodeKind == OpcodeKind.IO)
-            return this.shortAddress;
-        if (this.opcodeKind == OpcodeKind.Jump)
-            return this.longAddress;
-        throw new Exception("wrong opcode kind for d '" + this.opcodeKind + "'");
+        if (opcodeKind == OpcodeKind.Condition || opcodeKind == OpcodeKind.IO)
+            return shortAddress;
+        if (opcodeKind == OpcodeKind.Jump)
+            return longAddress;
+        throw new Exception("wrong opcode kind for d '" + opcodeKind + "'");
     }
 
     public int ioReg1() throws Exception {
-        if (this.opcodeKind != OpcodeKind.IO)
-            throw new Exception("wrong opcode kind for ioReg1 '" + this.opcodeKind + "'");
-        return this.reg1;
+        if (opcodeKind != OpcodeKind.IO)
+            throw new Exception("wrong opcode kind for ioReg1 '" + opcodeKind + "'");
+        return reg1;
     }
 
     public int ioReg2() throws Exception {
-        if (this.opcodeKind != OpcodeKind.IO)
-            throw new Exception("wrong opcode kind for ioReg2 '" + this.opcodeKind + "'");
-        return this.reg2;
+        if (opcodeKind != OpcodeKind.IO)
+            throw new Exception("wrong opcode kind for ioReg2 '" + opcodeKind + "'");
+        return reg2;
     }
 
     @Override
@@ -133,19 +133,19 @@ class Instruction {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.formatValue());
+        sb.append(formatValue());
         sb.append(" ");
-        sb.append(String.format("%1$4s", this.opcode));
+        sb.append(String.format("%1$4s", opcode));
         sb.append(" ");
 
-        switch (this.opcodeKind) {
+        switch (opcodeKind) {
             case Arithmetic -> {
                 try {
-                    sb.append(this.s1());
+                    sb.append(s1());
                     sb.append(" ");
-                    sb.append(this.s2());
+                    sb.append(s2());
                     sb.append(" ");
-                    sb.append(this.d());
+                    sb.append(d());
                 } catch (Exception e) {
                     System.err.println("toString failed");
                     System.exit(1);
@@ -154,11 +154,11 @@ class Instruction {
 
             case Condition -> {
                 try {
-                    sb.append(this.b());
+                    sb.append(b());
                     sb.append(" ");
-                    sb.append(this.d());
+                    sb.append(d());
                     sb.append(" ");
-                    sb.append(this.address());
+                    sb.append(address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
                     System.exit(1);
@@ -167,7 +167,7 @@ class Instruction {
 
             case Jump -> {
                 try {
-                    sb.append(this.address());
+                    sb.append(address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
                     System.exit(1);
@@ -176,11 +176,11 @@ class Instruction {
 
             case IO -> {
                 try {
-                    sb.append(this.ioReg1());
+                    sb.append(ioReg1());
                     sb.append(" ");
-                    sb.append(this.ioReg2());
+                    sb.append(ioReg2());
                     sb.append(" ");
-                    sb.append(this.address());
+                    sb.append(address());
                 } catch (Exception e) {
                     System.err.println("toString failed");
                     System.exit(1);
