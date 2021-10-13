@@ -145,8 +145,6 @@ class Instruction {
         StringBuilder sb = new StringBuilder();
         sb.append(this.formatValue());
         sb.append(" ");
-        sb.append(String.format("%1$10s", this.opcodeKind()));
-        sb.append(" ");
         sb.append(String.format("%1$4s", this.opcode()));
         sb.append(" ");
 

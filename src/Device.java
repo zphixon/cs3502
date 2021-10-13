@@ -20,7 +20,7 @@ public class Device {
                 ;
 
             // show the output of the program
-            dumpMemory(program.outputStart(), program.outputStart() + program.outputLength());
+            dumpMemory(ramLocation + program.outputStart(), ramLocation + program.outputStart() + program.outputLength());
             System.out.println(proc);
             System.out.println();
             ramLocation += 5;
