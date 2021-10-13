@@ -12,9 +12,7 @@ public class CPU {
     }
 
     public void savePCB() {
-        for (int i = 0; i < NUM_REGISTERS; i++) {
-            currentProcess.registers[i] = registers[i];
-        }
+        System.arraycopy(registers, 0, currentProcess.registers, 0, NUM_REGISTERS);
         currentProcess.ip = ip;
     }
 
@@ -77,9 +75,7 @@ public class CPU {
             }
 
             // copy register value to another
-            case MOV -> {
-                registers[instruction.s1()] = registers[instruction.s2()];
-            }
+            case MOV -> registers[instruction.s1()] = registers[instruction.s2()];
 
             case ADD -> {
                 int a = registers[instruction.s1()];
@@ -118,21 +114,13 @@ public class CPU {
             }
 
             // these are the same?
-            case MOVI, LDI -> {
-                registers[instruction.d()] = instruction.address();
-            }
+            case MOVI, LDI -> registers[instruction.d()] = instruction.address();
 
-            case ADDI -> {
-                registers[instruction.d()] += instruction.address();
-            }
+            case ADDI -> registers[instruction.d()] += instruction.address();
 
-            case MULI -> {
-                registers[instruction.d()] *= instruction.address();
-            }
+            case MULI -> registers[instruction.d()] *= instruction.address();
 
-            case DIVI -> {
-                registers[instruction.d()] /= instruction.address();
-            }
+            case DIVI -> registers[instruction.d()] /= instruction.address();
 
             // set less than
             case SLT -> {
