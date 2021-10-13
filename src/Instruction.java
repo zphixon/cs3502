@@ -1,9 +1,29 @@
 class Instruction {
     // use a long because java's bit-shift operators extend the sign
     private final long value;
+    public final OpcodeKind opcodeKind;
+    public final Opcode opcode;
+    private final int reg1;
+    private final int reg2;
+    private final int reg3;
+    private final int shortAddress;
+    private final int longAddress;
 
     public Instruction(int value) {
         this.value = Integer.toUnsignedLong(value);
+
+        int opcodeKind = (int) ((this.value & OPCODE_KIND_MASK) >> 30);
+        this.opcodeKind = OpcodeKind.values()[opcodeKind];
+
+        int opcode = (int) ((this.value & OPCODE_MASK) >> 24);
+        this.opcode = Opcode.values()[opcode];
+
+        this.reg1 = (int) ((this.value & REG1_MASK) >> 20);
+        this.reg2 = (int) ((this.value & REG2_MASK) >> 16);
+        this.reg3 = (int) ((this.value & REG3_MASK) >> 12);
+
+        this.shortAddress = (int) this.value & SHORT_ADDRESS_MASK;
+        this.longAddress = (int) this.value & LONG_ADDRESS_MASK;
     }
 
     public String formatValue() {
@@ -24,11 +44,6 @@ class Instruction {
         Condition,
         Jump,
         IO,
-    }
-
-    public OpcodeKind opcodeKind() {
-        int kind = (int) ((value & OPCODE_KIND_MASK) >> 30);
-        return OpcodeKind.values()[kind];
     }
 
     public enum Opcode {
@@ -61,75 +76,50 @@ class Instruction {
         BLZ,
     }
 
-    public Opcode opcode() {
-        int opcode = (int) ((this.value & OPCODE_MASK) >> 24);
-        return Opcode.values()[opcode];
-    }
-
-    private int longAddress() {
-        return (int) this.value & LONG_ADDRESS_MASK;
-    }
-
-    private int shortAddress() {
-        return (int) this.value & SHORT_ADDRESS_MASK;
-    }
-
-    private int reg1() {
-        return (int) ((this.value & REG1_MASK) >> 20);
-    }
-
-    private int reg2() {
-        return (int) ((this.value & REG2_MASK) >> 16);
-    }
-
-    private int reg3() {
-        return (int) ((this.value & REG3_MASK) >> 12);
-    }
-
     public int s1() throws Exception {
-        if (this.opcodeKind() != OpcodeKind.Arithmetic)
-            throw new Exception("wrong opcode kind for s1 '" + this.opcodeKind() + "'");
-        return this.reg1();
+        if (this.opcodeKind != OpcodeKind.Arithmetic)
+            throw new Exception("wrong opcode kind for s1 '" + this.opcodeKind + "'");
+        return this.reg1;
     }
 
     public int s2() throws Exception {
-        if (this.opcodeKind() != OpcodeKind.Arithmetic)
-            throw new Exception("wrong opcode kind for s2 '" + this.opcodeKind() + "'");
-        return this.reg2();
+        if (this.opcodeKind != OpcodeKind.Arithmetic)
+            throw new Exception("wrong opcode kind for s2 '" + this.opcodeKind + "'");
+        return this.reg2;
     }
 
     public int d() throws Exception {
-        if (this.opcodeKind() == OpcodeKind.Condition)
-            return this.reg2();
-        if (this.opcodeKind() == OpcodeKind.Arithmetic)
-            return this.reg3();
-        throw new Exception("wrong opcode kind for d '" + this.opcodeKind() + "'");
+        if (this.opcodeKind == OpcodeKind.Condition)
+            return this.reg2;
+        if (this.opcodeKind == OpcodeKind.Arithmetic)
+            return this.reg3;
+        throw new Exception("wrong opcode kind for d '" + this.opcodeKind + "'");
     }
 
     public int b() throws Exception {
-        if (this.opcodeKind() != OpcodeKind.Condition)
-            throw new Exception("wrong opcode kind for b '" + this.opcodeKind() + "'");
-        return this.reg1();
+        if (this.opcodeKind != OpcodeKind.Condition)
+            throw new Exception("wrong opcode kind for b '" + this.opcodeKind + "'");
+        return this.reg1;
     }
 
     public int address() throws Exception {
-        if (this.opcodeKind() == OpcodeKind.Condition || this.opcodeKind() == OpcodeKind.IO)
-            return this.shortAddress();
-        if (this.opcodeKind() == OpcodeKind.Jump)
-            return this.longAddress();
-        throw new Exception("wrong opcode kind for d '" + this.opcodeKind() + "'");
+        if (this.opcodeKind == OpcodeKind.Condition || this.opcodeKind == OpcodeKind.IO)
+            return this.shortAddress;
+        if (this.opcodeKind == OpcodeKind.Jump)
+            return this.longAddress;
+        throw new Exception("wrong opcode kind for d '" + this.opcodeKind + "'");
     }
 
     public int ioReg1() throws Exception {
-        if (this.opcodeKind() != OpcodeKind.IO)
-            throw new Exception("wrong opcode kind for ioReg1 '" + this.opcodeKind() + "'");
-        return this.reg1();
+        if (this.opcodeKind != OpcodeKind.IO)
+            throw new Exception("wrong opcode kind for ioReg1 '" + this.opcodeKind + "'");
+        return this.reg1;
     }
 
     public int ioReg2() throws Exception {
-        if (this.opcodeKind() != OpcodeKind.IO)
-            throw new Exception("wrong opcode kind for ioReg2 '" + this.opcodeKind() + "'");
-        return this.reg2();
+        if (this.opcodeKind != OpcodeKind.IO)
+            throw new Exception("wrong opcode kind for ioReg2 '" + this.opcodeKind + "'");
+        return this.reg2;
     }
 
     @Override
@@ -145,10 +135,10 @@ class Instruction {
         StringBuilder sb = new StringBuilder();
         sb.append(this.formatValue());
         sb.append(" ");
-        sb.append(String.format("%1$4s", this.opcode()));
+        sb.append(String.format("%1$4s", this.opcode));
         sb.append(" ");
 
-        switch (this.opcodeKind()) {
+        switch (this.opcodeKind) {
             case Arithmetic -> {
                 try {
                     sb.append(this.s1());

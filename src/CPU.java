@@ -26,7 +26,7 @@ public class CPU {
         if (Device.PRINT_INSTRUCTION)
             System.out.println(String.format("%04x  ", ip) + instruction);
 
-        switch (instruction.opcode()) {
+        switch (instruction.opcode) {
             // read content from *r2 or *address into r1
             case RD -> {
                 currentProcess.ioOperations++;
