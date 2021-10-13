@@ -6,9 +6,9 @@ public class Process {
     int ip = 0;
     int ramLocation;
     int ioOperations = 0;
-    int startTime;
+    long startTime;
 
-    public Process(Program program, int ramLocation, int startTime) {
+    public Process(Program program, int ramLocation, long startTime) {
         this.program = program;
         this.ramLocation = ramLocation;
         this.startTime = startTime;

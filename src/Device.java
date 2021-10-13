@@ -12,7 +12,7 @@ public class Device {
             System.out.println(program);
             for (int j = program.diskLocation(); j < program.diskLocation() + program.totalLength(); j++)
                 ram[ramLocation + j - program.diskLocation()] = disk[j];
-            Process proc = new Process(program, ramLocation, 0);
+            Process proc = new Process(program, ramLocation, cpu.tick);
             cpu.switchContext(proc);
 
             // run a single program

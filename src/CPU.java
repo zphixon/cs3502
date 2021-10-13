@@ -5,6 +5,7 @@ public class CPU {
     int[] registers = new int[NUM_REGISTERS];
     int ip = 0;
     Process currentProcess;
+    long tick;
 
     public void switchContext(Process newProcess) {
         currentProcess = newProcess;
@@ -20,6 +21,7 @@ public class CPU {
     public boolean step() throws Exception {
         // decode the instruction
         Instruction instruction = new Instruction(Device.ram[ip]);
+        tick++;
 
         if (Device.PRINT_INSTRUCTION)
             System.out.println(String.format("%04x  ", ip) + instruction);
