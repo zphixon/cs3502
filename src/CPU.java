@@ -34,9 +34,9 @@ public class CPU {
                 // TODO cache, preemption
                 int address;
                 if (instruction.ioReg2() != 0)
-                    address = registers[instruction.ioReg2()] / 4;
+                    address = byteAddressToWordAddress(registers[instruction.ioReg2()]);
                 else if (instruction.address() != 0)
-                    address = instruction.address() / 4;
+                    address = byteAddressToWordAddress(instruction.address());
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
@@ -51,9 +51,9 @@ public class CPU {
                 // TODO preemption
                 int address;
                 if (instruction.ioReg2() != 0)
-                    address = registers[instruction.ioReg2()] / 4;
+                    address = byteAddressToWordAddress(registers[instruction.ioReg2()]);
                 else if (instruction.address() != 0)
-                    address = instruction.address() / 4;
+                    address = byteAddressToWordAddress(instruction.address());
                 else
                     throw new Exception("illegal instruction '" + instruction + "'");
 
@@ -64,14 +64,14 @@ public class CPU {
             // store register data to memory
             case ST -> {
                 int data = registers[instruction.b()];
-                int address = registers[instruction.d()] / 4;
+                int address = byteAddressToWordAddress(registers[instruction.d()]);
                 // TODO cache
                 Device.ram[currentProcess.ramLocation + address] = data;
             }
 
             // load memory into register with offset value in register
             case LW -> {
-                int address = (instruction.address() + registers[instruction.b()]) / 4;
+                int address = byteAddressToWordAddress(instruction.address() + registers[instruction.b()]);
                 // TODO cache
                 registers[instruction.d()] = Device.ram[currentProcess.ramLocation + address];
             }
@@ -155,7 +155,7 @@ public class CPU {
 
             // branch instructions return because we don't want to increment the ip
             case JMP -> {
-                ip = currentProcess.ramLocation + instruction.address() / 4;
+                ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                 return true;
             }
 
@@ -164,7 +164,7 @@ public class CPU {
                 int d = registers[instruction.d()];
 
                 if (b == d) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -174,7 +174,7 @@ public class CPU {
                 int d = registers[instruction.d()];
 
                 if (b != d) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -183,7 +183,7 @@ public class CPU {
                 int b = registers[instruction.b()];
 
                 if (b == 0) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -192,7 +192,7 @@ public class CPU {
                 int b = registers[instruction.b()];
 
                 if (b != 0) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -201,7 +201,7 @@ public class CPU {
                 int b = registers[instruction.b()];
 
                 if (b > 0) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -210,7 +210,7 @@ public class CPU {
                 int b = registers[instruction.b()];
 
                 if (b < 0) {
-                    ip = currentProcess.ramLocation + instruction.address() / 4;
+                    ip = currentProcess.ramLocation + byteAddressToWordAddress(instruction.address());
                     return true;
                 }
             }
@@ -218,6 +218,10 @@ public class CPU {
 
         ip++;
         return true;
+    }
+
+    private static int byteAddressToWordAddress(int bytes) {
+        return bytes / 4;
     }
 
     @Override
