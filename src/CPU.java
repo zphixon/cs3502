@@ -9,7 +9,7 @@ public class CPU {
 
     public void switchContext(Process newProcess) {
         currentProcess = newProcess;
-        ip = newProcess.ramLocation;
+        ip = newProcess.ip;
     }
 
     public void savePCB() {

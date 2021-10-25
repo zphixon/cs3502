@@ -12,6 +12,7 @@ public class Process {
         this.program = program;
         this.ramLocation = ramLocation;
         this.startTime = startTime;
+        this.ip = ramLocation;
     }
 
     @Override
