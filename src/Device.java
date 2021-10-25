@@ -4,6 +4,11 @@ public class Device {
     public static void main(String[] args) throws Exception {
         // sets up Device.disk with the programs
         Loader.load("programs.txt");
+
+        tickTock();
+    }
+
+    private static void sequential() throws Exception {
         CPU cpu = new CPU();
 
         // manually move the program to ram to execute
@@ -25,8 +30,50 @@ public class Device {
             System.out.println();
             ramLocation += 5;
         }
+    }
 
-        //dumpMemory();
+    private static void tickTock() throws Exception {
+        CPU cpu = new CPU();
+
+        Program prog1 = programs.get(0);
+        Program prog2 = programs.get(1);
+
+        System.arraycopy(disk, prog1.diskLocation(), ram, prog1.diskLocation(), prog1.totalLength());
+        System.arraycopy(disk, prog2.diskLocation(), ram, prog2.diskLocation(), prog2.totalLength());
+
+        Process p1 = new Process(prog1, 0, cpu.tick);
+        Process p2 = new Process(prog2, prog1.totalLength(), cpu.tick);
+
+        cpu.switchContext(p1);
+        int current = 1;
+
+        int numRunning = 2;
+        while (numRunning != 0) {
+            int proc = (int) (cpu.tick + 1) % 3;
+            System.out.print("n="+numRunning + " c=" + current + "      ");
+            boolean running = cpu.step();
+            // swap every 3 instructions or on a HLT, but only if there are processes left
+            if ((!running || proc == 0) && numRunning == 2) {
+                System.out.println("swap");
+                cpu.savePCB();
+                if (current == 1) {
+                    current = 2;
+                    cpu.switchContext(p2);
+                } else {
+                    current = 1;
+                    cpu.switchContext(p1);
+                }
+            }
+
+            if (!running)
+                numRunning--;
+        }
+
+        // should be e4, 55
+        System.out.println(p1);
+        dumpMemory(prog1.outputStart(), prog1.outputStart() + 1);
+        System.out.println(p2);
+        dumpMemory(prog2.diskLocation() + prog2.outputStart(), prog2.diskLocation() + prog2.outputStart() + 1);
     }
 
     public static final boolean PRINT_INSTRUCTION = true;
