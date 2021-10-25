@@ -10,6 +10,7 @@ public class CPU {
     public void switchContext(Process newProcess) {
         currentProcess = newProcess;
         ip = newProcess.ip;
+        System.arraycopy(newProcess.registers, 0, registers, 0, NUM_REGISTERS);
     }
 
     public void savePCB() {
